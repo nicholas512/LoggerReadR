@@ -72,7 +72,3 @@ pad_missing_separators <- function(lines, ncols){
   paste0(lines, padding)
 }
 
-
-filename <- "C:\\Users\\Nick\\src\\logger-read\\LoggerReader\\sample_files\\GP5W_260.csv"
-
-
