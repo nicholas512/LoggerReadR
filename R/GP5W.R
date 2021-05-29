@@ -1,4 +1,6 @@
-#' @title Read GP5W file
+GP5_DATEFMT = "%d.%m.%Y %H:%M:%S"
+GP5_DELIMITER = ","
+#' @title Read a GP5W file
 #'
 #' @description Read data from a Geoprecision GP5W file
 #'
@@ -7,24 +9,20 @@
 #' @return dataframe, a dataframe
 #'
 #' @export
-#' @include
-
-DATEFMT = "%d.%m.%Y %H:%M:%S"
-
-read_GP5W <- function(filename){
+read_gp5w <- function(filename){
   lines <- readLines(filename)
 
   header <- get_gp5w_header(lines)
   obs <- get_gp5w_observations(lines)
 
-  ncols <- length(gregexpr(",", header)[[1]])
-  obs <- pad_missing_separators(obs, ncols)
+  ncols <- length(gregexpr(",", header)[[1]]) + 1  # length(strsplit(header, ","))
+  obs <- pad_missing_separators(obs, ncols, GP5_DELIMITER)
 
 
-  df <- read.table(textConnection(obs), sep=',', header=T)
+  df <- utils::read.table(textConnection(obs), sep=',', header=F)
   colnames(df) <- strsplit(header, ",")[[1]]
 
-  df$Time <- as.POSIXct(df$Time, format=DATEFMT)
+  df$Time <- as.POSIXct(df$Time, format=GP5_DATEFMT)
   return(df)
 }
 
@@ -62,13 +60,12 @@ is_gp5w_observation <- function(line){
   grepl("\\d*,\\d{2}\\.\\d{2}\\.\\d{4}", line)
 }
 
-pad_missing_separators <- function(lines, ncols){
+pad_missing_separators <- function(lines, ncols, separator){
   n_separators = sapply(gregexpr(",", lines), length)
-  n_missing_separators = ncols - n_separators
+  n_missing_separators = pmax(0, ((ncols - 1) - n_separators))
 
-  padding <- as.character(sapply(n_missing_separators, rep, x=","))
-  padding[padding=="character(0)"] = ""
+  padding <- sapply(lapply(n_missing_separators, rep, x=separator), paste0, collapse="")
+  #  padding[padding == "character(0)"] = ""
 
   paste0(lines, padding)
 }
-
