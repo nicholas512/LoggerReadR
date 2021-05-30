@@ -30,6 +30,8 @@ read_GP5W_metadata <- function(filename){
   stop("Not Implemented")
 }
 
+
+#' @noRd
 get_gp5w_header <- function(lines){
   index <- which(is_gp5w_header(lines))
 
@@ -42,6 +44,8 @@ get_gp5w_header <- function(lines){
   }
 }
 
+
+#' @noRd
 get_gp5w_observations <- function(lines){
   index <- which(is_gp5w_observation(lines))
 
