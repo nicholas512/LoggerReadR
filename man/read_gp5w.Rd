@@ -2,16 +2,22 @@
 % Please edit documentation in R/GP5W.R
 \name{read_gp5w}
 \alias{read_gp5w}
-\title{Read a GP5W file}
+\title{Read Geoprecision (GP5W)}
 \usage{
-read_gp5w(filename)
+read_gp5w(filename, simplify = FALSE)
 }
 \arguments{
 \item{filename}{character, path to the file}
+
+\item{simplify}{logical, whether LoggerReadR should simplify the returned dataframe (see details)}
 }
 \value{
 dataframe, a dataframe
 }
 \description{
 Read data from a Geoprecision GP5W file
+}
+\details{
+If simplify is `TRUE`, the dataframe will be standardized somewhat: row numbers and non-data columns
+will be removed; time and date columns will be combined into a single column called `TIME`.
 }

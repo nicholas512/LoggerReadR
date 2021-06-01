@@ -4,10 +4,12 @@
 \alias{read_geoprecision}
 \title{Read Geoprecision file}
 \usage{
-read_geoprecision(filename)
+read_geoprecision(filename, simplify = FALSE)
 }
 \arguments{
 \item{filename}{path to geoprecision file}
+
+\item{simplify}{logical whether LoggerReadR should simplify the returned dataframe (see details)}
 }
 \description{
 Read geoprecision file (autodetect GP5W / FG2)

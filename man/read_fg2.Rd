@@ -2,12 +2,14 @@
 % Please edit documentation in R/FG2.R
 \name{read_fg2}
 \alias{read_fg2}
-\title{Read a FG2 file}
+\title{Read Geoprecision (FG2)}
 \usage{
-read_fg2(filename)
+read_fg2(filename, simplify = FALSE)
 }
 \arguments{
 \item{filename}{character, path to the file}
+
+\item{simplify}{logical whether LoggerReadR should simplify the returned dataframe (see details)}
 }
 \value{
 dataframe, a dataframe
