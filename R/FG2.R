@@ -1,16 +1,23 @@
+# Configuration ===========================================================
+
+
 FG2_DATEFMT = "%d.%m.%Y %H:%M:%S"
 FG2_DELIMITER = ","
 
-#' @title Read a FG2 file
+
+# Public functions ======================================================
+
+
+#' @title Read Geoprecision (FG2)
 #'
 #' @description Read data from a Geoprecision FG2 file
 #'
 #' @param filename character, path to the file
-#'
+#' @param simplify logical whether LoggerReadR should simplify the returned dataframe (see details)
 #' @return dataframe, a dataframe
 #'
 #' @export
-read_fg2 <- function(filename){
+read_fg2 <- function(filename, simplify=FALSE){
   lines <- readLines(filename)
 
   header <- get_fg2_header(lines)
@@ -30,6 +37,10 @@ read_fg2_metadata <- function(filename){
   stop("Not Implemented")
 }
 
+
+# Hidden functions =================================================================
+
+
 get_fg2_header <- function(lines){
   index <- which(is_fg2_header(lines))
 
@@ -42,6 +53,7 @@ get_fg2_header <- function(lines){
   }
 }
 
+
 get_fg2_observations <- function(lines){
   index <- which(is_fg2_observation(lines))
 
@@ -52,18 +64,23 @@ get_fg2_observations <- function(lines){
   }
 }
 
+
 is_fg2_header <- function(line){
   grepl(paste0("NO", FG2_DELIMITER, "TIME"), line)
 }
 
+
 is_fg2_observation <- function(line){
   grepl(paste0("^\\d*", FG2_DELIMITER, "\\d\\d.\\d\\d"), line)
 }
+
 
 is_fg2_info <- function(line){
   grepl("^<.*>$", line)
 }
 
 
-
+simplify_fg2 <- function(df){
+  stop("not implemented")
+}
 
