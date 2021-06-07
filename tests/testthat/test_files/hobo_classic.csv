@@ -1,0 +1,134 @@
+﻿Date Time	Temp (°C)  #9724974	Temp (°C)  #9724974	Coupler Detached	Coupler Attached	Host Connected	End Of File
+08/18/10 14:00:00.0	20.865	20.984	Logged				Details
+08/18/10 15:00:00.0	20.174	20.317					Series: Temp, °C
+08/18/10 16:00:00.0	6.458	6.611					Devices
+08/18/10 17:00:00.0	7.920	8.394					Device Info
+08/18/10 18:00:00.0	7.519	7.670					Product: HOBO U23-003 Temp/Temp
+08/18/10 19:00:00.0	5.975	6.051					Serial Number: 9724974
+08/18/10 20:00:00.0	5.437	5.462					Version Number: 1.09
+08/18/10 21:00:00.0	6.255	6.560					Manufacturer: Onset Computer Corporation
+08/18/10 22:00:00.0	8.245	8.519					Device Memory: 65536
+08/18/10 23:00:00.0	10.271	10.492					Header Created: 08/18/10 10:08:42 GMT-07:00 AM
+08/19/10 00:00:00.0	10.492	11.053					Deployment Info
+08/19/10 01:00:00.0	10.492	11.102					Full Series Name: Temperature, °C
+08/19/10 02:00:00.0	10.369	10.980					Launch Name: 9724974
+08/19/10 03:00:00.0	10.198	10.785					Deployment Number: 1
+08/19/10 04:00:00.0	9.977	10.565					Launch Time: 08/18/10 01:09:01 GMT-07:00 PM
+08/19/10 05:00:00.0	9.756	10.345					Logging Interval: 01 Hr 00 Min 00 Sec
+08/19/10 06:00:00.0	9.534	10.075					Launch GMT Offset: -7 Hr 0 Min
+08/19/10 07:00:00.0	9.287	9.805					Battery at Launch: 3.43 Volts
+08/19/10 08:00:00.0	9.089	9.558					Launching Program: HOBOware-2.2.0_18-RC10
+08/19/10 09:00:00.0	9.558	10.345					Series Statistics
+08/19/10 10:00:00.0	10.858	11.589					Samples: 21,723
+08/19/10 11:00:00.0	12.751	12.944					Max: 23.569
+08/19/10 12:00:00.0	12.195	12.098					Min: -34.761
+08/19/10 13:00:00.0	11.492	11.467					Avg: -2.543
+08/19/10 14:00:00.0	12.074	12.630					Std Dev (σ): 9.823
+08/19/10 15:00:00.0	13.209	12.992					First Sample Time: 08/18/10 02:00:00 GMT-07:00 PM
+08/19/10 16:00:00.0	10.785	15.342					Last Sample Time: 02/08/13 04:00:00 GMT-07:00 PM
+08/19/10 17:00:00.0	9.608	14.768					Series: Temp, °C
+08/19/10 18:00:00.0	9.485	14.361					Devices
+08/19/10 19:00:00.0	8.220	12.437					Device Info
+08/19/10 20:00:00.0	7.770	10.492					Product: HOBO U23-003 Temp/Temp
+08/19/10 21:00:00.0	7.393	8.866					Serial Number: 9724974
+08/19/10 22:00:00.0	6.839	7.268					Version Number: 1.09
+08/19/10 23:00:00.0	6.560	6.535					Manufacturer: Onset Computer Corporation
+08/20/10 00:00:00.0	6.382	6.102					Device Memory: 65536
+08/20/10 01:00:00.0	6.102	5.745					Header Created: 08/18/10 10:08:42 GMT-07:00 AM
+08/20/10 02:00:00.0	5.591	5.437					Deployment Info
+08/20/10 03:00:00.0	5.821	5.257					Full Series Name: Temperature, °C
+08/20/10 04:00:00.0	5.821	4.999					Launch Name: 9724974
+08/20/10 05:00:00.0	5.385	4.921					Deployment Number: 1
+08/20/10 06:00:00.0	4.844	4.844					Launch Time: 08/18/10 01:09:01 GMT-07:00 PM
+08/20/10 07:00:00.0	4.662	4.818					Logging Interval: 01 Hr 00 Min 00 Sec
+08/20/10 08:00:00.0	4.895	5.411					Launch GMT Offset: -7 Hr 0 Min
+08/20/10 09:00:00.0	4.973	6.433					Battery at Launch: 3.43 Volts
+08/20/10 10:00:00.0	4.714	8.070					Launching Program: HOBOware-2.2.0_18-RC10
+08/20/10 11:00:00.0	4.610	7.920					Series Statistics
+08/20/10 12:00:00.0	5.334	9.213					Samples: 21,723
+08/20/10 13:00:00.0	5.257	10.541					Max: 27.776
+08/20/10 14:00:00.0	5.898	11.613					Min: -15.104
+08/20/10 15:00:00.0	6.204	12.534					Avg: 0.145
+08/20/10 16:00:00.0	7.217	14.218					Std Dev (σ): 6.336
+08/20/10 17:00:00.0	6.026	12.413					First Sample Time: 08/18/10 02:00:00 GMT-07:00 PM
+08/20/10 18:00:00.0	5.693	10.687					Last Sample Time: 02/08/13 04:00:00 GMT-07:00 PM
+08/20/10 19:00:00.0	6.661	10.590					Event Type: Coupler Detached
+08/20/10 20:00:00.0	5.847	9.509					Devices
+08/20/10 21:00:00.0	4.141	7.116					Device Info
+08/20/10 22:00:00.0	4.558	5.411					Product: HOBO U23-003 Temp/Temp
+08/20/10 23:00:00.0	4.220	4.350					Serial Number: 9724974
+08/21/10 00:00:00.0	4.272	4.376					Version Number: 1.09
+08/21/10 01:00:00.0	4.115	3.722					Manufacturer: Onset Computer Corporation
+08/21/10 02:00:00.0	3.801	2.664					Device Memory: 65536
+08/21/10 03:00:00.0	3.301	1.913					Header Created: 08/18/10 10:08:42 GMT-07:00 AM
+08/21/10 04:00:00.0	3.670	2.343					Deployment Info
+08/21/10 05:00:00.0	3.958	2.797					Full Series Name: Coupler Detached
+08/21/10 06:00:00.0	3.854	3.063					Launch Name: 9724974
+08/21/10 07:00:00.0	3.801	3.406					Deployment Number: 1
+08/21/10 08:00:00.0	4.037	4.714					Launch Time: 08/18/10 01:09:01 GMT-07:00 PM
+08/21/10 09:00:00.0	4.480	6.560					Launch GMT Offset: -7 Hr 0 Min
+08/21/10 10:00:00.0	4.688	7.870					Battery at Launch: 3.43 Volts
+08/21/10 11:00:00.0	5.796	10.320					Series Statistics
+08/21/10 12:00:00.0	5.591	11.662					Samples: 3
+08/21/10 13:00:00.0	6.864	13.161					First Sample Time: 08/18/10 02:00:00 GMT-07:00 PM
+08/21/10 14:00:00.0	7.820	13.834					Last Sample Time: 07/27/11 11:52:16 GMT-07:00 AM
+08/21/10 15:00:00.0	7.645	13.882					Event Type: Coupler Attached
+08/21/10 16:00:00.0	7.419	13.882					Devices
+08/21/10 17:00:00.0	7.368	13.161					Device Info
+08/21/10 18:00:00.0	7.995	13.858					Product: HOBO U23-003 Temp/Temp
+08/21/10 19:00:00.0	7.469	11.516					Serial Number: 9724974
+08/21/10 20:00:00.0	8.419	10.369					Version Number: 1.09
+08/21/10 21:00:00.0	6.737	8.693					Manufacturer: Onset Computer Corporation
+08/21/10 22:00:00.0	6.509	6.230					Device Memory: 65536
+08/21/10 23:00:00.0	6.306	5.282					Header Created: 08/18/10 10:08:42 GMT-07:00 AM
+08/22/10 00:00:00.0	6.077	4.792					Deployment Info
+08/22/10 01:00:00.0	5.591	4.141					Full Series Name: Coupler Attached
+08/22/10 02:00:00.0	5.308	3.880					Launch Name: 9724974
+08/22/10 03:00:00.0	4.895	3.591					Deployment Number: 1
+08/22/10 04:00:00.0	4.792	3.354					Launch Time: 08/18/10 01:09:01 GMT-07:00 PM
+08/22/10 05:00:00.0	4.428	3.009					Launch GMT Offset: -7 Hr 0 Min
+08/22/10 06:00:00.0	4.168	2.557					Battery at Launch: 3.43 Volts
+08/22/10 07:00:00.0	4.011	1.940					Series Statistics
+08/22/10 08:00:00.0	4.168	2.450					Samples: 2
+08/22/10 09:00:00.0	4.636	2.637					First Sample Time: 07/27/11 11:44:41 GMT-07:00 AM
+08/22/10 10:00:00.0	5.308	2.610					Last Sample Time: 07/27/11 11:51:51 GMT-07:00 AM
+08/22/10 11:00:00.0	7.217	4.688					Event Type: Host Connected
+08/22/10 12:00:00.0	7.444	9.213					Devices
+08/22/10 13:00:00.0	7.066	8.295					Device Info
+08/22/10 14:00:00.0	8.394	10.198					Product: HOBO U23-003 Temp/Temp
+08/22/10 15:00:00.0	8.369	9.903					Serial Number: 9724974
+08/22/10 16:00:00.0	9.064	8.965					Version Number: 1.09
+08/22/10 17:00:00.0	8.891	9.780					Manufacturer: Onset Computer Corporation
+08/22/10 18:00:00.0	8.369	10.075					Device Memory: 65536
+08/22/10 19:00:00.0	6.839	8.020					Header Created: 08/18/10 10:08:42 GMT-07:00 AM
+08/22/10 20:00:00.0	6.661	6.914					Deployment Info
+08/22/10 21:00:00.0	5.975	5.770					Full Series Name: Host Connected
+08/22/10 22:00:00.0	5.796	5.128					Launch Name: 9724974
+08/22/10 23:00:00.0	5.616	4.740					Deployment Number: 1
+08/23/10 00:00:00.0	5.154	4.506					Launch Time: 08/18/10 01:09:01 GMT-07:00 PM
+08/23/10 01:00:00.0	4.869	4.168					Launch GMT Offset: -7 Hr 0 Min
+08/23/10 02:00:00.0	4.818	4.246					Battery at Launch: 3.43 Volts
+08/23/10 03:00:00.0	4.662	4.168					Series Statistics
+08/23/10 04:00:00.0	4.740	3.722					Samples: 3
+08/23/10 05:00:00.0	4.766	3.063					First Sample Time: 07/27/11 11:44:42 GMT-07:00 AM
+08/23/10 06:00:00.0	4.220	2.477					Last Sample Time: 07/27/11 11:51:52 GMT-07:00 AM
+08/23/10 07:00:00.0	4.428	2.155					Event Type: End Of File
+08/23/10 08:00:00.0	4.688	2.530					Devices
+08/23/10 09:00:00.0	5.024	4.376					Device Info
+08/23/10 10:00:00.0	6.179	6.357					Product: HOBO U23-003 Temp/Temp
+08/23/10 11:00:00.0	6.611	8.792					Serial Number: 9724974
+08/23/10 12:00:00.0	6.585	8.568					Version Number: 1.09
+08/23/10 13:00:00.0	6.230	8.693					Manufacturer: Onset Computer Corporation
+08/23/10 14:00:00.0	6.331	9.410					Device Memory: 65536
+08/23/10 15:00:00.0	6.331	9.854					Header Created: 08/18/10 10:08:42 GMT-07:00 AM
+08/23/10 16:00:00.0	5.975	9.583					Deployment Info
+08/23/10 17:00:00.0	5.745	9.509					Full Series Name: End Of File
+08/23/10 18:00:00.0	5.385	8.643					Launch Name: 9724974
+08/23/10 19:00:00.0	5.308	7.970					Deployment Number: 1
+08/23/10 20:00:00.0	5.231	7.268					Launch Time: 08/18/10 01:09:01 GMT-07:00 PM
+08/23/10 21:00:00.0	5.024	6.306					Launch GMT Offset: -7 Hr 0 Min
+08/23/10 22:00:00.0	5.128	5.514					Battery at Launch: 3.43 Volts
+08/23/10 23:00:00.0	4.740	4.844					Series Statistics
+08/24/10 00:00:00.0	4.921	4.844					Samples: 1
+08/24/10 01:00:00.0	4.818	4.506					First Sample Time: 02/08/13 04:00:00 GMT-07:00 PM
+08/24/10 02:00:00.0	4.298	3.670					Last Sample Time: 02/08/13 04:00:00 GMT-07:00 PM
