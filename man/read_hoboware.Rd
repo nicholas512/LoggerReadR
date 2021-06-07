@@ -4,7 +4,7 @@
 \alias{read_hoboware}
 \title{Read Onset HOBOWare file}
 \usage{
-read_hoboware(filename, configuration, simplify = FALSE)
+read_hoboware(filename, configuration, simplify = FALSE, encoding = "UTF-8")
 }
 \arguments{
 \item{filename}{character, path to the file}

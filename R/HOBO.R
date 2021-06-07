@@ -48,7 +48,9 @@ read_hoboware <- function(filename, configuration, simplify=FALSE, encoding = "U
   }
 
   lines <- readLines(filename, encoding=encoding)
-  headerline_i <- which(is_header_line(lines, configuration))
+  headerline_i <- which(is_header_line(lines, configuration$separate_date_time,
+                                       configuration$no_quotes_or_commas,
+                                       configuration$separator))
   print(headerline_i)
   headerline <- lines[headerline_i]
 
@@ -59,6 +61,9 @@ read_hoboware <- function(filename, configuration, simplify=FALSE, encoding = "U
   if (configuration$include_plot_details){
     df <- df[,-ncol(df)]
   }
+
+  colnames(df) <- headerline
+
   df
 }
 
@@ -164,21 +169,32 @@ hbw_parse_number_format <- function(lines){
   as.list(apply(match.table, 2, Mode)) # LoggerReadR::
 }
 
+#' @details Return the appropriate time format string
+hbw_time_fmt <- function(time_format_24hr, always_show_fractional_seconds){
 
-hbw_detect_time_format_24h <- function(lines){
-  pattern = paste0("^",     #  Start of line
-                   "(\\d*[\\t,;])?",  # maybe a line number with separator
-                   "\\d{2}(?P<tsep>[/-])",  # First time component
-                   "(?P<sep>()),  # a separator(AM|PM).")
-  matches <- grepl(pattern, lines, perl=TRUE)
-
-  if (sum(matches) < HOBO_MAX_HEADER_LINES){
-    TRUE
+  if (time_format_24hr){
+    fmt = "%H:%M:%S"
   }else{
-    FALSE
+    fmt =  "%I:%M:%S %p"
   }
+
+  if (always_show_fractional_seconds){
+    fmt = gsub("S", "S.%f", fmt)
+  }
+  fmt
 }
 
+hbw_date_fmt <- function(date_format, date_separator){
+  #if (! date_format %in% HOBO_DATE_FORMATS){
+  #  stop(paste0("Incorrect date pattern. Choose from", HOBO_DATE_FORMATS))
+ # }
+  switch(date_format,
+         "YMD" = gsub("-", date_separator, "%y-%m-%d"),
+         "MDY" = gsub("-", date_separator, "%m-%d-%y"),
+         "DMY" = gsub("-", date_separator, "%d-%m-%y"),
+         stop(paste0("Incorrect date pattern. Choose from: ",
+                     paste0(HOBO_DATE_FORMATS, collapse=", "))))
+}
 
 hbw_parse_time_format <- function(lines){
   pattern = paste0("^",     #  Start of line
@@ -328,7 +344,7 @@ is_data_header <- function(text, no_quotes_or_commas){
 
 #' @details Detect the value of the parameter "no quotes or commas"
 hbw_detect_no_quotes_commas <- function(lines){
-  any(grepl('[\\t;,]"Date', lines))
+  !any(grepl('"Date', lines))
 }
 
 
@@ -368,17 +384,18 @@ header_regex <- function(separate_date_time, no_quotes_or_commas, separator){
 }
 
 
-is_header_line <- function(lines, configuration){
-  pattern <- header_regex(configuration$separate_date_time,
-                          configuration$no_quotes_or_commas,
-                          configuration$separator)
+is_header_line <- function(lines, separate_date_time, no_quotes_or_commas, separator){
+  pattern <- header_regex(separate_date_time,
+                          no_quotes_or_commas,
+                          separator)
   grepl(pattern, lines)
 }
 
 
 detect_time_zone_from_header_line <- function(headerline){
   tz_match <- regmatches(headerline, regexpr(HOBO_TZ_REGEX, headerline))
-  gsub(":", "", tz_match)
+  tz <- gsub(":", "", tz_match)
+  gsub("GMT", "", tz)
 }
 
 

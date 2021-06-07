@@ -4,7 +4,7 @@
 \alias{detect_hoboware_configuration}
 \title{Detect HOBOWare file properties}
 \usage{
-detect_hoboware_configuration(filename)
+detect_hoboware_configuration(filename, encoding = "UTF-8")
 }
 \arguments{
 \item{filename}{character, path to the file}
