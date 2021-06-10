@@ -79,7 +79,7 @@ regcapturedmatches<-function(x,m) {
 
 #' Helper function to get mode
 #' https://stackoverflow.com/a/8189441
-#' @export
+#' @noRd
 Mode <- function(x) {
   ux <- unique(x)
   ux[which.max(tabulate(match(x, ux)))]

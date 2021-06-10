@@ -10,7 +10,7 @@ detect_hoboware_configuration(filename, encoding = "UTF-8")
 \item{filename}{character, path to the file}
 }
 \value{
-named list of HOBOWare configuration properties (see details for names)
+A named list of HOBOWare configuration properties (see details for names)
 }
 \description{
 Auto-detect the various HOBOWare text file configuration options that were set for a file
@@ -27,10 +27,10 @@ The name keywords to configure a HOBOWare file are:
 \item \code{include_logger_serial}. Chosen from:  {\code{TRUE}, \code{FALSE}}
 \item \code{include_sensor_serial}. Chosen from:  {\code{TRUE}, \code{FALSE}}
 \item \code{date_format}. Chosen from: \code{"MDY", "YMD", "DMY"}
-\item \code{date_separator}. Chosen from: {}
+\item \code{date_separator}. Chosen from: `-`, `\`
 \item \code{time_format_24hr}. Chosen from:  {\code{TRUE}, \code{FALSE}}
-\item \code{positive_number_format}. Chosen from: \code{1,2,3,4}
-\item \code{negative_number_format}. Chosen from: \code{1,2,3} (corresponding to )
+\item \code{positive_number_format}. Chosen from: \code{1,2,3,4} (corresponding to \code{"1,234.56", "1 234,56", "1.234,56", "1.234 56"})
+\item \code{negative_number_format}. Chosen from: \code{1,2,3} (corresponding to \code{"-123", "123-", , "(123)"})
 \item \code{include_plot_details}. Chosen from:  {\code{TRUE}, \code{FALSE}}
 }
 }

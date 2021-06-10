@@ -26,7 +26,7 @@ HOBO_NEG_N_FMT <- c(1,2,3)
 #'
 #' @author Nick Brown
 #'
-#' @description Read Onset HOBOWare file. Optionally provide file configuration properties.
+#' @description Read Onset HOBOWare file no matter how it is formatted
 #'
 #' @param filename character, path to the file
 #'
@@ -35,36 +35,60 @@ HOBO_NEG_N_FMT <- c(1,2,3)
 #'
 #' @param simplify logical, whether LoggerReadR should simplify the returned dataframe (see details)
 #'
+#' @param encoding The encoding of the textfile. Defaults to "UTF-8"
+#'
 #' @return dataframe, a dataframe
 #'
 #' @details
 #'
 #' @export
-read_hoboware <- function(filename, configuration, simplify=FALSE, encoding = "UTF-8"){
+read_hoboware <- function(filename, configuration, simplify=TRUE, encoding = "UTF-8"){
 
   if (missing(configuration)){
-    warning("No configuration properties provided. Attempting to detect.")
+    warning("No configuration properties were provided. LoggerReadR autodetected the configuration.")
     configuration <- detect_hoboware_configuration(filename)
   }
 
   lines <- readLines(filename, encoding=encoding)
-  headerline_i <- which(is_header_line(lines, configuration$separate_date_time,
+  headerline_i <- which(hbw_is_header_line(lines, configuration$separate_date_time,
                                        configuration$no_quotes_or_commas,
                                        configuration$separator))
-  print(headerline_i)
   headerline <- lines[headerline_i]
 
-  # get time zone
-
   df <- utils::read.table(textConnection(lines), sep=configuration$separator,
-                    header=F, skip=headerline_i, fill=T)
+                    header=F, skip=headerline_i, fill=T, stringsAsFactors = F)
+
   if (configuration$include_plot_details){
     df <- df[,-ncol(df)]
   }
 
-  colnames(df) <- headerline
+  colnames(df) <- colnames(utils::read.table(textConnection(removeBOM(headerline)),
+                                    sep=configuration$separator,
+                                    header=T, stringsAsFactors = F, comment.char=""))
 
-  df
+  if (!simplify){
+    return(df)
+
+  }else{
+    details <- hbw_extract_hoboware_details(lines)
+    tz <- NULL
+    tz <- hbw_detect_time_zone_from_header_line(headerline)
+
+    if (is.null(tz)
+        & configuration$include_plot_details
+        & configuration$no_quotes_or_commas
+        & length(details) > 1){
+      tz <- hbw_detect_time_zone_from_details(details)
+    }
+
+    data_columns <- df[, hbw_is_data_header(colnames(df))]
+    data_columns$TIME <- create_datetime_column(df, tz, configuration)
+
+
+    output <- data_columns[, c(ncol(data_columns), 1:(ncol(data_columns) - 1))]  # Reorder
+    return(output)
+  }
+
 }
 
 
@@ -74,7 +98,7 @@ read_hoboware <- function(filename, configuration, simplify=FALSE, encoding = "U
 #'
 #' @param filename character, path to the file
 #'
-#' @return named list of HOBOWare configuration properties (see details for names)
+#' @return A named list of HOBOWare configuration properties (see details for names)
 #'
 #' @details The name keywords to configure a HOBOWare file are:
 #'
@@ -87,10 +111,10 @@ read_hoboware <- function(filename, configuration, simplify=FALSE, encoding = "U
 #' \item \code{include_logger_serial}. Chosen from:  {\code{TRUE}, \code{FALSE}}
 #' \item \code{include_sensor_serial}. Chosen from:  {\code{TRUE}, \code{FALSE}}
 #' \item \code{date_format}. Chosen from: \code{"MDY", "YMD", "DMY"}
-#' \item \code{date_separator}. Chosen from: {}
+#' \item \code{date_separator}. Chosen from: `-`, `\`
 #' \item \code{time_format_24hr}. Chosen from:  {\code{TRUE}, \code{FALSE}}
-#' \item \code{positive_number_format}. Chosen from: \code{1,2,3,4}
-#' \item \code{negative_number_format}. Chosen from: \code{1,2,3} (corresponding to )
+#' \item \code{positive_number_format}. Chosen from: \code{1,2,3,4} (corresponding to \code{"1,234.56", "1 234,56", "1.234,56", "1.234 56"})
+#' \item \code{negative_number_format}. Chosen from: \code{1,2,3} (corresponding to \code{"-123", "123-", , "(123)"})
 #' \item \code{include_plot_details}. Chosen from:  {\code{TRUE}, \code{FALSE}}
 #' }
 #'
@@ -112,7 +136,7 @@ detect_hoboware_configuration <- function(filename, encoding="UTF-8"){
   config$include_sensor_serial  <- NULL
   config$date_format <- hbw_detect_date_format(lines)
   config$date_separator <- date_info$dsep
-  config$time_format_24hr <- toupper(date_info$ampm) %in% c("AM", "PM")
+  config$time_format_24hr <- !(toupper(date_info$ampm) %in% c("AM", "PM"))
   config$positive_number_format  <- hbw_evaluate_positive_number_format(number_info$thou, number_info$decimal)
   config$negative_number_format   <- hbw_evaluate_negative_number_format(number_info$neg1, number_info$neg2)
   config$include_plot_details   <- hbw_detect_include_plot_details(lines)
@@ -120,7 +144,13 @@ detect_hoboware_configuration <- function(filename, encoding="UTF-8"){
   config
 }
 
-
+#' @title Read hoboware details
+#' @description Read details from a Hoboware export file if they were included
+#' @param filename character, path to the file
+#' @param configuration A named list of file configuration properties according to \code{\link{detect_hoboware_configuration}}.
+#' If missing, LoggerReadR will attempt to auto-detect configuration properties.
+#' @param encoding The encoding of the textfile. Defaults to "UTF-8"
+#' @export
 read_hoboware_details <- function(filename, configuration, encoding = "UTF-8"){
   if (missing(configuration)){
     warning("No configuration properties provided. Attempting to detect.")
@@ -128,14 +158,28 @@ read_hoboware_details <- function(filename, configuration, encoding = "UTF-8"){
   }
 
   lines <- readLines(filename, encoding=encoding, n=500)
+
+  hbw_extract_hoboware_details(lines)
+}
+
+# Hidden functions =================================================================
+
+
+hbw_extract_hoboware_details <- function(lines){
   matches <- regexpr("(?P<key>\\b[A-Za-z ]+\\b):(?P<value>.*)$", lines, perl=TRUE)
   match.table <- regcapturedmatches(lines, matches)
   match.table[match.table == ""] <- NA
 
-  data.frame(na.omit(match.table), stringsAsFactors = F)
-}
 
-# Hidden functions =================================================================
+  details <- data.frame(stats::na.omit(match.table), stringsAsFactors = F)
+  details[,2] <- trimws(details[,2])
+
+  if (nrow(details) > 2){  # If it only gets the header row
+    return(details)
+  }else{
+    return(NA)
+  }
+}
 
 
 #' @description Given a list of lines from a hoboware file, detect
@@ -155,9 +199,9 @@ hbw_parse_number_format <- function(lines){
       "(\\d{3}(?P=thou))*",     # 'Sandwiched' digit triplets using same thousands separator
       "\\d{1,3}",               # Hundreds, tens, ones
       "(?P<decimal>",
-        "[\\., ]",                # Separated by a decimal delimiter
+        "[\\., ]",                # Possibly separated by a decimal delimiter
       ")",
-      "\\d+",                   # Decimal digits (assume at least 1)
+      "\\d+",                   # Decimal digits (TODO: these might actually not be present)
       "(?P<neg2>[-\\)])?",      # Possible terminating negative sign {')'}
       "(?P=sep)",               # The same column separator
     ")+"                      # Repeated for each data column
@@ -169,7 +213,59 @@ hbw_parse_number_format <- function(lines){
   as.list(apply(match.table, 2, Mode)) # LoggerReadR::
 }
 
+#' @title remove byte order mark (BOM) from dataframe headers
+#' @param  headers character vector of dataframe headers
+#'
+#' @return character vector of dataframe headers with BOM (<U+FEFF>) removed
+#' @noRd
+removeBOM <- function(headers){
+  gsub("\\xef\\xbb\\xbf", "", headers, useBytes = T)
+}
+
+
+#' @title create datetime column from a dataframe
+#' @param df dataframe with datetime column or date & time columns from HOBOWare export
+#' @param tz string of GMT offset e.g. "-0400"
+#'
+#' @noRd
+create_datetime_column <- function(df, tz, configuration){  # TODO: make input date_col and time_col instead of df // values instead of full config
+  tzfmt <- ifelse(missing(tz), "", "%z")
+  tz <- ifelse(missing(tz), "", tz)
+
+  if (missing(tz)){
+    warning("Created datetime column with no timezone. Assumed UTC.")
+  }
+
+  if (configuration$separate_date_time){
+
+    date_column <- df[, grepl("Date", colnames(df))]
+    time_column <- df[, grepl("Time", colnames(df))]
+
+    full_date <- paste(date_column, time_column, tz)
+
+  }else{
+    datetime_column <- df[, grepl("Date.Time", colnames(df))]
+    full_date <- paste(datetime_column, tz)
+
+  }
+
+  date_fmt <- paste(hbw_date_fmt(configuration$date_format,
+                                  configuration$date_separator),
+                     hbw_time_fmt(configuration$time_format_24hr,
+                                  configuration$always_show_fractional_seconds),
+                     tzfmt)
+
+  full_date <- gsub("  ", " ", full_date)  # strip double-spaces
+
+  date <- as.POSIXct(full_date, format=date_fmt)
+
+  date
+}
+
+
+#' @title HoboWare time string format
 #' @details Return the appropriate time format string
+#' @noRd
 hbw_time_fmt <- function(time_format_24hr, always_show_fractional_seconds){
 
   if (time_format_24hr){
@@ -179,7 +275,7 @@ hbw_time_fmt <- function(time_format_24hr, always_show_fractional_seconds){
   }
 
   if (always_show_fractional_seconds){
-    fmt = gsub("S", "S.%f", fmt)
+    fmt = gsub("S", "OS", fmt)
   }
   fmt
 }
@@ -226,7 +322,8 @@ hbw_parse_time_format <- function(lines){
 }
 
 
-#' @details Detect whether date and time are separate columns
+#' @title Detect whether date and time are separate columns
+#' @noRd
 hbw_detect_separate_date_time <- function(lines){
   separate <- "Date[^ ].*Time"
   combined <- "Date Time"
@@ -248,24 +345,26 @@ hbw_detect_separate_date_time <- function(lines){
   }}
 
 
-#' @details Detect the value of the parameter "include plot details"
+#' @title Detect the value of the parameter "include plot details"
+#' @noRd
 hbw_detect_include_plot_details <- function(lines){
   options <- paste0(HOBO_DETAILS_KEYWORDS, collapse="|")
   pattern <- paste0("(", options, ")")
-  if (length(grepl(pattern, lines)) > 3){
+  if (sum(grepl(pattern, lines)) >= 1){
     TRUE
   }else{
     FALSE
   }
 }
 
-#'
+#' @title Evaluate the positive number format
 #' @details Evaluate the positive number format based on detected separators.
 #' Positive number formats are as follows:
 #'   |1| 1,234.56 | comma, period |
 #'   |2| 1 234,56 | space, comma  |
 #'   |3| 1.234,56 | period, comma |
 #'   |4| 1.234 56 | period, space |
+#' @noRd
 hbw_evaluate_positive_number_format <- function(thou_sep, deci_sep){
 
   if ((thou_sep == ",") & (deci_sep == ".")){
@@ -292,12 +391,12 @@ hbw_evaluate_positive_number_format <- function(thou_sep, deci_sep){
   return(NA)
 }
 
-
+#' @title Evaluate negative number format
 #' @details Return negative number format
 #'         |1| -123 | -, None |
 #'         |2| 123- | None, -  |
 #'         |3| (123) | (, ) |
-#'
+#' @noRd
 hbw_evaluate_negative_number_format <- function(negative_open, negative_terminator){
   if ((negative_open == "-") & (negative_terminator == "")){
     return(1)
@@ -309,15 +408,16 @@ hbw_evaluate_negative_number_format <- function(negative_open, negative_terminat
     return(NA)
   }}
 
-#' @details Detect whether dates are MDY, YMD, or DMY.
-#' This is based on heuristics and the assumption of evenly distributed sampling at
+#' @title Detect whether dates are MDY, YMD, or DMY.
+#' @details This is based on heuristics and the assumption of evenly distributed sampling at
 #' a frequency greater than monthly (by looking at which set of numbers is more 'diverse' and
 #' assuming that corresponds to days rather than months)
+#' @noRd
 hbw_detect_date_format <- function(lines){
   matches <- regexpr("(?P<p1>\\d{2}).(?P<p2>\\d{2}).(?P<p3>\\d{2}).\\d{2}:\\d{2}:\\d{2}", lines, perl=TRUE)
   match.table <- regcapturedmatches(lines, matches)
   match.table[match.table==""] <- NA
-  match.table <- data.frame(na.omit(match.table), stringsAsFactors = F)
+  match.table <- data.frame(stats::na.omit(match.table), stringsAsFactors = F)
 
   if (max(match.table$p2) > 12){
     fmt = "MDY"
@@ -332,23 +432,29 @@ hbw_detect_date_format <- function(lines){
 }
 
 
-#' @details Determine whether a string represents a column name with data
-is_data_header <- function(text, no_quotes_or_commas){
-  if (no_quotes_or_commas){
-    pattern = paste0("(", paste0(HOBO_DATA_HEADERS, collapse='|'), ") \\(.{1,5}\\)")
-  }else{
+#' @title Determine whether a string represents a column name with data
+#' @noRd
+hbw_is_data_header <- function(text){
+
     pattern = paste0("(", paste0(HOBO_DATA_HEADERS, collapse='|'), ")")
-  }
-  grepl(pattern, text, ignore.case=TRUE)
+
+  grepl(pattern, tolower(text), ignore.case=TRUE)
 }
 
-#' @details Detect the value of the parameter "no quotes or commas"
+
+hbw_is_datetime_header <- function(text){
+  grepl("(Date.Time|Date|Time)(,\\s*GMT.\\d\\d.\\d\\d)?$", text)
+}
+
+#' @title Detect the value of the parameter "no quotes or commas"
+#' @noRd
 hbw_detect_no_quotes_commas <- function(lines){
   !any(grepl('"Date', lines))
 }
 
 
-#' @details create a configuration list for 'default' hoboware settings (2021)
+#' @title create a configuration list for 'default' hoboware settings (2021)
+#' @noRd
 hobo.config.defaults <- function(){
   config <- list(separator= ",",
                  include_line_number= TRUE,
@@ -369,7 +475,7 @@ hobo.config.defaults <- function(){
 }
 
 
-header_regex <- function(separate_date_time, no_quotes_or_commas, separator){
+hbw_header_regex <- function(separate_date_time, no_quotes_or_commas, separator){
   if (separate_date_time){
 
     if (no_quotes_or_commas){
@@ -384,25 +490,99 @@ header_regex <- function(separate_date_time, no_quotes_or_commas, separator){
 }
 
 
-is_header_line <- function(lines, separate_date_time, no_quotes_or_commas, separator){
-  pattern <- header_regex(separate_date_time,
+
+
+hbw_is_header_line <- function(lines, separate_date_time, no_quotes_or_commas, separator){
+  pattern <- hbw_header_regex(separate_date_time,
                           no_quotes_or_commas,
                           separator)
   grepl(pattern, lines)
 }
 
 
-detect_time_zone_from_header_line <- function(headerline){
+hbw_detect_time_zone_from_header_line <- function(headerline){
   tz_match <- regmatches(headerline, regexpr(HOBO_TZ_REGEX, headerline))
   tz <- gsub(":", "", tz_match)
-  gsub("GMT", "", tz)
+  tz <- gsub("GMT", "", tz)
+
+  if (length(tz) == 0){
+    return(NULL)
+  }
+  tz
 }
 
 
-#' @details Create an empty configuration list
+#' @title detect HoboWare time zone from details
+#' @param details dataframe of details as returned by read.hobo.details
+#' @noRd
+hbw_detect_time_zone_from_details <- function(details){
+  tz_match <- regmatches(details[,2], regexpr(HOBO_TZ_REGEX, details[,2]))
+  tz <- gsub(":", "", tz_match)
+  tz <- gsub("GMT", "", tz)
+
+  if (!length(unique(tz)) == 1){
+    warning("Several possible time zones were found in the file details.")
+  }
+
+  tz <- rev(tz)[1]
+
+  if (!class(tz) == "character" || length(tz) == 0){
+    return(NULL)
+  }
+
+  return(tz)
+}
+
+
+#' @title Configuration 'default' hoboware settings (2021)
+#' @noRd
+hobo.config.defaults <- function(){
+  config <- list(separator= ",",
+                 include_line_number= TRUE,
+                 include_plot_title_in_header= TRUE,
+                 always_show_fractional_seconds= FALSE,
+                 separate_date_time= FALSE,
+                 no_quotes_or_commas= FALSE,
+                 include_logger_serial= TRUE,
+                 include_sensor_serial= TRUE,
+                 date_format= "MDY",
+                 date_separator= "/",
+                 time_format_24hr= FALSE,
+                 positive_number_format= 1,
+                 negative_number_format= 1,
+                 include_plot_details= NA)
+
+  config
+}
+
+
+#' @title Create an empty Hoboware configuration
+#' @return list
+#' @noRd
 hobo.config.empty <- function(){
   config <- hobo.config.defaults()
   config[TRUE] <- NA
   config
 }
 
+
+
+hobo.config.classic <- function(){
+  config <- list(separator= "\t",
+                 include_line_number= FALSE,
+                 include_plot_title_in_header= FALSE,
+                 always_show_fractional_seconds= TRUE,
+                 separate_date_time= FALSE,
+                 no_quotes_or_commas= TRUE,
+                 include_logger_serial= FALSE,
+                 include_sensor_serial= TRUE,
+                 date_format= "MDY",
+                 date_separator= "/",
+                 time_format_24hr= TRUE,
+                 positive_number_format= 1,
+                 negative_number_format= 1,
+                 include_plot_details= NA)
+
+  config
+
+}
