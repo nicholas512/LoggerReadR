@@ -66,6 +66,10 @@ read_hoboware <- function(filename, configuration, simplify=TRUE, encoding = "UT
                                     sep=configuration$separator,
                                     header=T, stringsAsFactors = F, comment.char=""))
 
+  df[, hbw_is_data_header(colnames(df))] <- lapply(df[, hbw_is_data_header(colnames(df))],
+                                                   function(x) hbw_convert_number_format(x, configuration$positive_number_format))
+
+
   if (!simplify){
     return(df)
 
@@ -172,9 +176,10 @@ hbw_extract_hoboware_details <- function(lines){
 
 
   details <- data.frame(stats::na.omit(match.table), stringsAsFactors = F)
-  details[,2] <- trimws(details[,2])
+
 
   if (nrow(details) > 2){  # If it only gets the header row
+    details[,2] <- trimws(details[,2])
     return(details)
   }else{
     return(NA)
@@ -356,6 +361,41 @@ hbw_detect_include_plot_details <- function(lines){
     FALSE
   }
 }
+
+
+hbw_decimal_separator <- function(positive_number_format){
+  switch(as.character(positive_number_format),
+         "1"=".",
+         "2"=",",
+         "3"=",",
+         "4"=" ", NA)
+}
+
+
+hbw_thousands_separator <- function(positive_number_format){
+  switch(as.character(positive_number_format),
+         "1"=",",
+         "2"=" ",
+         "3"=".",
+         "4"=".", NA)
+}
+
+
+#' @title  convert nonstandard number formats
+#' @param df vector of nonstandard numeric data
+#' @param positive_number_format integer according to \code{\link{hbw_evaluate_positive_number_format}
+#' @param negative_number_format integer \code{\link{hbw_evaluate_negative_number_format}
+#' @return vector of converted (numeric) data
+#' @noRd
+hbw_convert_number_format <- function(data, positive_number_format, negative_number_format){
+  converted <- gsub(hbw_thousands_separator(positive_number_format), "", data, fixed=T)
+  converted <- gsub(hbw_decimal_separator(positive_number_format), ".", converted, fixed=T)
+  converted <- gsub("^\\(([0-9\\.]*)\\)$", "-\\1", converted)
+  converted <- gsub("^([0-9\\.]*)-$", "-\\1", converted)
+
+  as.numeric(converted)
+}
+
 
 #' @title Evaluate the positive number format
 #' @details Evaluate the positive number format based on detected separators.

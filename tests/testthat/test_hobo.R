@@ -90,3 +90,20 @@ testthat::test_that("time format detected", {
   expect_equal(fmt3$dsep,"/")
   expect_equal(fmt3$dtdelim, " ")
 })
+
+testthat::test_that("time format detected", {
+  expect_equal(hbw_extract_hoboware_details('no details here'), NA)
+  expect_equal(nrow(hbw_extract_hoboware_details(
+               rep('09/28/10 21:00:00.0\t0.934\t0.880\t\t\tEvent Type: Host Connected', 3))), 3)
+  })
+
+
+testthat::test_that("recover nonstandard numbers", {
+  expect_equal(hbw_convert_number_format("1 23,4", 2, 1), 123.4)
+  expect_equal(hbw_convert_number_format("(1 23,4)", 2, 3), -123.4)
+  expect_equal(hbw_convert_number_format("1.234,56", 3, 1), 1234.56)
+  expect_equal(hbw_convert_number_format("1.234,56-", 3, 2), -1234.56)
+  expect_equal(hbw_convert_number_format("1.234 56", 4, 1), 1234.56)
+  expect_equal(hbw_convert_number_format("-1.234 56", 4, 1), -1234.56)
+})
+
