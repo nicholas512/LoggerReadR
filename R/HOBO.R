@@ -39,14 +39,19 @@ HOBO_NEG_N_FMT <- c(1,2,3)
 #'
 #' @return dataframe, a dataframe
 #'
-#' @details
+#' @details If simplify is `TRUE`, the dataframe will be standardized somewhat: row numbers and non-data columns
+#' will be removed; time and date columns will be combined into a single column called `TIME`.
 #'
 #' @export
 read_hoboware <- function(filename, configuration, simplify=TRUE, encoding = "UTF-8"){
 
   if (missing(configuration)){
-    warning("No configuration properties were provided. LoggerReadR autodetected the configuration.")
+    warning("No configuration properties were provided. LoggerReadR will  autodetect the configuration.")
     configuration <- detect_hoboware_configuration(filename)
+    if (any(is.na(configuration))){
+      configuration <- autodetect_failure(configuration)
+
+    }
   }
 
   lines <- readLines(filename, encoding=encoding)
@@ -101,6 +106,7 @@ read_hoboware <- function(filename, configuration, simplify=TRUE, encoding = "UT
 #' @description Auto-detect the various HOBOWare text file configuration options that were set for a file
 #'
 #' @param filename character, path to the file
+#' @param encoding character, encoding of file passed to readLines. Defaults to 'UTF-8'
 #'
 #' @return A named list of HOBOWare configuration properties (see details for names)
 #'
@@ -148,6 +154,31 @@ detect_hoboware_configuration <- function(filename, encoding="UTF-8"){
   config
 }
 
+#' @title Notify autodetection failure
+#' @description Print best-guess configuration and notify that it couldn't find everything.
+autodetect_failure <- function(config){
+    warning("Could not autodetect complete text file configuration. Results printed to console.")
+  message("configuration <- list(")
+
+  for (n in names(config)){
+    failed = ifelse(is.na(config[[n]]),
+                    paste("  #*#  Failed to detect. Using default value [",
+                          hobo.config.defaults()[[n]],"]"), "")
+    comma <- ifelse(rev(names(config))[1] == n, "", ",")
+    printvalue <- ifelse(is.character(config[[n]]),
+                         shQuote(gsub("\t","\\\\t", config[[n]])),
+                         config[[n]])
+    #print(config[n])
+    #print(is.character(config[n]))
+    config[[n]] <- ifelse(is.na(config[[n]]), hobo.config.defaults()[[n]], config[[n]])
+    message(paste(n,"=", printvalue, comma, failed))
+  }
+
+  message(")\n")
+
+  config
+}
+
 #' @title Read hoboware details
 #' @description Read details from a Hoboware export file if they were included
 #' @param filename character, path to the file
@@ -169,6 +200,8 @@ read_hoboware_details <- function(filename, configuration, encoding = "UTF-8"){
 # Hidden functions =================================================================
 
 
+#' @description Extract key: value pairs from file, if present
+#' @noRd
 hbw_extract_hoboware_details <- function(lines){
   matches <- regexpr("(?P<key>\\b[A-Za-z ]+\\b):(?P<value>.*)$", lines, perl=TRUE)
   match.table <- regcapturedmatches(lines, matches)
@@ -178,7 +211,7 @@ hbw_extract_hoboware_details <- function(lines){
   details <- data.frame(stats::na.omit(match.table), stringsAsFactors = F)
 
 
-  if (nrow(details) > 2){  # If it only gets the header row
+  if (nrow(details) > 2){  # We don't want to return the header row, so
     details[,2] <- trimws(details[,2])
     return(details)
   }else{
@@ -383,8 +416,8 @@ hbw_thousands_separator <- function(positive_number_format){
 
 #' @title  convert nonstandard number formats
 #' @param df vector of nonstandard numeric data
-#' @param positive_number_format integer according to \code{\link{hbw_evaluate_positive_number_format}
-#' @param negative_number_format integer \code{\link{hbw_evaluate_negative_number_format}
+#' @param positive_number_format integer according to \code{\link{hbw_evaluate_positive_number_format}}
+#' @param negative_number_format integer \code{\link{hbw_evaluate_negative_number_format}}
 #' @return vector of converted (numeric) data
 #' @noRd
 hbw_convert_number_format <- function(data, positive_number_format, negative_number_format){
@@ -420,12 +453,19 @@ hbw_evaluate_positive_number_format <- function(thou_sep, deci_sep){
       return(1)
     }else if (deci_sep == " "){
       return(4)
+    }else{  # Now we're guessing
+      warning("Unable to detect thousands separator")
+      return(NA)
     }
   }else if (deci_sep == ""){
     if (thou_sep == ","){
       return(1)
     }else if (thou_sep == " "){
       return(2)
+    }
+    else{  # Now we're guessing
+      warning("Unable to detect decimal separator")
+      return(NA)
     }}
 
   return(NA)
