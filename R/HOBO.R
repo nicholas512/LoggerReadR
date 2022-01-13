@@ -3,12 +3,39 @@
 
 HOBO_MAXLINES <- 400
 HOBO_MAX_HEADER_LINES <- 40  # How many possible lines before data (a guess).
-HOBO_DATA_HEADERS <- c(  # Taken from HOBOware help manual. Not Complete.
+HOBO_DEFAULT_HEADERS <- c(  # Taken from HOBOware help manual.  https://www.onsetcomp.com/files/manual_pdfs/12730-AD%20HOBOware%20User%27s%20Guide.pdf
   "x accel", "y accel", "z accel",
-  "watt-hours", "kilowatt-hours",
-  "watts",
-  "rh", "temp", "wind speed", "wind dir", "soil moisture", "amps", "volts"
+  "watt-hours", "kilowatt-hours", "watts",
+  "volt-amps",
+  "co2",
+  "low range", "full range", "high range",
+  "counts",
+  "dew point", "DewPt",
+  "gust speed",
+  "leaf wetness",
+  "intensity",
+  "par",
+  "power factor",
+  "pres",
+  "rain",
+  "volt-amps-reactive",
+  "rh",
+  "amps",
+  "volts",
+  "salinity",
+  "soil moisture",
+  "conductance",
+  "sum vector",
+  "temp",
+  "x tilt", "y tilt", "z tilt",
+  "water pres",
+  "wind speed",
+  "wind dir"
 )
+HOBO_EXTRA_HEADERS <- c(  # Found in the wild
+  "abs pres"
+)
+HOBO_DATA_HEADERS <- c(HOBO_DEFAULT_HEADERS, HOBO_EXTRA_HEADERS)
 HOBO_TZ_REGEX = "GMT\\s?[-+]\\d\\d:\\d\\d"
 
 HOBO_DETAILS_KEYWORDS <- c("First Sample Time", "Battery at Launch", "Device Info", "Deployment Info")
@@ -70,6 +97,7 @@ read_hoboware <- function(filename, configuration, simplify=TRUE, encoding = "UT
   colnames(df) <- colnames(utils::read.table(textConnection(removeBOM(headerline)),
                                     sep=configuration$separator,
                                     header=T, stringsAsFactors = F, comment.char=""))
+
 
   df[, hbw_is_data_header(colnames(df))] <- lapply(df[, hbw_is_data_header(colnames(df))],
                                                    function(x) hbw_convert_number_format(x, configuration$positive_number_format))
