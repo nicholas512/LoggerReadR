@@ -11,7 +11,7 @@ read_geoprecision <- function(filename, simplify=FALSE){
   info_line <- readLines(filename, n=1)
   reader <- get_reader(info_line)
 
-  if (class(reader) == "function"){
+  if (is(reader, "function")){
     return(reader(filename))
   }else{
     warning("Could not autodetect file type (GP5W / FG2) from first line. Trying to read anyways.")
