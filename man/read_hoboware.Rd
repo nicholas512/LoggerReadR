@@ -23,7 +23,8 @@ dataframe, a dataframe
 Read Onset HOBOWare file no matter how it is formatted
 }
 \details{
-
+If simplify is `TRUE`, the dataframe will be standardized somewhat: row numbers and non-data columns
+will be removed; time and date columns will be combined into a single column called `TIME`.
 }
 \author{
 Nick Brown
