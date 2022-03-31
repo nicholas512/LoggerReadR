@@ -22,6 +22,8 @@ Description: Data loggers for environmental science data can be configured to ou
       Currently, data from the following sensors are supported: ('Geoprecision', 'HoboWare').
 License: GPL-3
 Encoding: UTF-8
+Imports:
+    methods
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
