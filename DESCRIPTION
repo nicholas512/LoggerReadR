@@ -6,7 +6,6 @@ Authors@R:
    person("Nick", "Brown", email="nick.brown@carleton.ca", 
           role=c("aut","cre"), 
           comment = c(ORCID = "0000-0002-2719-0671"))
-Maintainer: Nick Brown <nick.brown@carleton.ca>
 Description: Dataloggers for environmental science data can be configured to output text files
     in any number of flavours. Differences in date formats and separators, or the presence of
     extra metadata in header rows can make it hard to easily and consistently open datalogger 
@@ -15,7 +14,7 @@ Description: Dataloggers for environmental science data can be configured to out
     sensor of the same make and model. This makes it harder for scientists to share data and use
     a common set of tools for quality control and analysis of observational data.
       LoggerReadR is a library of text-file readers for permafrost-related dataloggers meant to 
-    open files effortly as dataframes. Instead of trying to make a single csv-reader that can
+    open files as dataframes. Instead of trying to make a single csv-reader that can
     handle any format, LoggerReadR treats each datalogger manufacturer separately; this makes it possible to
     open files automatically with greater confidence that they're being read properly. 
     LoggerReadR can be used as a standalone library for interactive data analysis and 
@@ -23,7 +22,6 @@ Description: Dataloggers for environmental science data can be configured to out
       Currently, data from the following sensors are supported: (Geoprecision, HoboWare).
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
