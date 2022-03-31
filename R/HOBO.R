@@ -183,28 +183,29 @@ detect_hoboware_configuration <- function(filename, encoding="UTF-8"){
 }
 
 #' @title Notify autodetection failure
+#' @param configuration A named list of file configuration properties according to \code{\link{detect_hoboware_configuration}}.
+#' If missing, LoggerReadR will attempt to auto-detect configuration properties.
 #' @description Print best-guess configuration and notify that it couldn't find everything.
-autodetect_failure <- function(config){
+autodetect_failure <- function(configuration){
     warning("Could not autodetect complete text file configuration. Results printed to console.")
   message("configuration <- list(")
 
-  for (n in names(config)){
-    failed = ifelse(is.na(config[[n]]),
+  for (n in names(configuration)){
+    failed = ifelse(is.na(configuration[[n]]),
                     paste("  #*#  Failed to detect. Using default value [",
                           hobo.config.defaults()[[n]],"]"), "")
-    comma <- ifelse(rev(names(config))[1] == n, "", ",")
-    printvalue <- ifelse(is.character(config[[n]]),
-                         shQuote(gsub("\t","\\\\t", config[[n]])),
-                         config[[n]])
-    #print(config[n])
-    #print(is.character(config[n]))
-    config[[n]] <- ifelse(is.na(config[[n]]), hobo.config.defaults()[[n]], config[[n]])
+    comma <- ifelse(rev(names(configuration))[1] == n, "", ",")
+    printvalue <- ifelse(is.character(configuration[[n]]),
+                         shQuote(gsub("\t","\\\\t", configuration[[n]])),
+                         configuration[[n]])
+
+    configuration[[n]] <- ifelse(is.na(configuration[[n]]), hobo.config.defaults()[[n]], configuration[[n]])
     message(paste(n,"=", printvalue, comma, failed))
   }
 
   message(")\n")
 
-  config
+  configuration
 }
 
 #' @title Read hoboware details

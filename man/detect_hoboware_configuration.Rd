@@ -8,6 +8,8 @@ detect_hoboware_configuration(filename, encoding = "UTF-8")
 }
 \arguments{
 \item{filename}{character, path to the file}
+
+\item{encoding}{character, encoding of file passed to readLines. Defaults to 'UTF-8'}
 }
 \value{
 A named list of HOBOWare configuration properties (see details for names)
