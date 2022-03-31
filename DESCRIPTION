@@ -1,6 +1,6 @@
 Package: LoggerReadR
 Type: Package
-Title: Effortlessly read text files from environmental science dataloggers
+Title: Effortlessly Read Text Files from Environmental Science Dataloggers
 Version: 0.1.0
 Author: Nick Brown
 Maintainer: Nick Brown <nick.brown@carleton.ca>
